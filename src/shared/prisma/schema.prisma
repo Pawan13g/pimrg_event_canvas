@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum role {
+  ADMIN
+}
+
+enum coordinator {
+  FACULTY
+  STUDENT
+}
+
+enum department {
+  COMMERCE
+  IT
+  LAW
+}
+
+enum organizer {
+  CSCLUB
+  FINANCECLUB
+  HRCLUB
+  MARKETINGCLUB
+  SPANDHAN
+  OTHER
+}
+
+model user {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String
+  password  String
+  role      role     @default(ADMIN)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model event {
+  id            Int                 @id @default(autoincrement())
+  name          String
+  description   String
+  coverImageURL String?
+  stateDate     DateTime
+  endDate       DateTime
+  startTime     DateTime
+  endTime       DateTime
+  organizedBY   organizer
+  isActive      Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  coordinatedBy event_coordinator[]
+  images        event_image[]
+}
+
+model event_coordinator {
+  id        Int         @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String
+  contNo    String
+  dept      department
+  course    String?
+  type      coordinator @default(STUDENT)
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  event     event       @relation(fields: [eventId], references: [id])
+  eventId   Int
+}
+
+model event_image {
+  id       Int     @id @default(autoincrement())
+  name     String
+  url      String
+  event    event   @relation(fields: [eventId], references: [id])
+  eventId  Int
+  isActive Boolean @default(true)
+}
