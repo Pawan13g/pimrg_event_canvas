@@ -9,7 +9,7 @@ export async function GET() {
     sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
 
     try {
-        const data = await prisma.event.findMany({ where: { isActive: true }, include: { event_image: true, coordinatedBy: true } })
+        const data = await prisma.event.findMany({ where: { isActive: true }, include: { images: true, coordinatedBy: true } })
         return NextResponse.json({ error: false, success: true, msg: "success", data }, { status: 200 });
 
     } catch (error: any) {

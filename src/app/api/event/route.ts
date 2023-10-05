@@ -7,7 +7,7 @@ import prisma from "@/shared/prisma/db";
 export async function GET() {
 
     try {
-        const data = await prisma.event.findMany({ where: { isActive: true }, include: { event_image: true, coordinatedBy: true } })
+        const data = await prisma.event.findMany({ where: { isActive: true }, include: { images: true, coordinatedBy: true } })
         return NextResponse.json({ error: false, success: true, msg: "success", data }, { status: 200 });
 
     } catch (error: any) {
@@ -18,15 +18,15 @@ export async function GET() {
 
 
 export async function POST(req: NextRequest) {
-    const { eventName, eventAuthority, eventDescription, eventFrom, eventTo, eventStartTime, eventEndTime, eventDisplayImageURL: dummyImage }: POST = await req.json();
+    const { name, organizedBY, description, startDate, endDate, startTime, endTime }: POST = await req.json();
 
-    let eventDisplayImageURL = dummyImage ? dummyImage : process.env.DUMMY_IMAGE_URL as string;
+    let coverImageURL = process.env.DUMMY_IMAGE_URL as string;
 
-    if (!eventName || !eventAuthority || !eventDescription || !eventFrom || !eventTo || !eventStartTime || !eventEndTime)
+    if (!name || !organizedBY || !description || !startDate || !endDate || !startTime || !endTime)
         return NextResponse.json({ error: true, success: false, msg: "unsufficient parimeters", data: null }, { status: 400 });
 
     try {
-        const data = await prisma.event.create({ data: { eventName, eventAuthority, eventDescription, eventFrom, eventTo, eventStartTime, eventEndTime, eventDisplayImageURL } });
+        const data = await prisma.event.create({ data: { name, organizedBY, description, startDate, endDate, startTime, endTime, coverImageURL } });
 
         return NextResponse.json({ error: false, success: true, msg: "success", data }, { status: 201 });
 

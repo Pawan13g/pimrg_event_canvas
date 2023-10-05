@@ -12,7 +12,7 @@ export async function DELETE(req: Request, { params: { id } }: { params: { id: n
     try {
         const event = await prisma.event.update({ where: { id: Number(id) }, data: { isActive: false } });
 
-        return NextResponse.json({ error: false, success: true, msg: `Event - "${event.eventName}" Deleted `, data: null }, { status: 200 });
+        return NextResponse.json({ error: false, success: true, msg: `Event - "${event.name}" Deleted `, data: null }, { status: 200 });
 
     } catch (error: any) {
         return NextResponse.json({ error: true, success: false, msg: error.message, data: null }, { status: 400 });

@@ -51,7 +51,7 @@ model event {
   name          String
   description   String
   coverImageURL String?
-  stateDate     DateTime
+  startDate     DateTime
   endDate       DateTime
   startTime     DateTime
   endTime       DateTime

@@ -31,7 +31,7 @@ const getEvents = async (eventsType: string | undefined = undefined) => {
 
 export default async function Home({ searchParams: { eventsType } }: { searchParams: { [key: string]: string | undefined } }) {
 
-  const events = await getEvents(eventsType);
+  const events: any = await getEvents(eventsType);
 
   return (
     <>
@@ -81,7 +81,7 @@ export default async function Home({ searchParams: { eventsType } }: { searchPar
                     <div key={index} className="space-y-3 w-[250px]">
                       <div className="overflow-hidden rounded-md">
                         <Image
-                          src={event.eventDisplayImageURL as string}
+                          src={event.coverImageURL as string}
                           alt={"Event Image"}
                           width={250}
                           height={330}
@@ -89,8 +89,8 @@ export default async function Home({ searchParams: { eventsType } }: { searchPar
                         />
                       </div>
                       <div className="space-y-1 ml-2 text-sm">
-                        <h3 className="font-medium leading-none">{event.eventName}</h3>
-                        <p className="text-xs text-muted-foreground">{event.eventAuthority}</p>
+                        <h3 className="font-medium leading-none">{event.name}</h3>
+                        <p className="text-xs text-muted-foreground">{event.organizedBY}</p>
                       </div>
                     </div>
                   ))}

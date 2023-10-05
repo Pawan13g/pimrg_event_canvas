@@ -1,10 +1,12 @@
+
+type organizer = "CSCLUB" | "FINANCECLUB" | "HRCLUB" | "MARKETINGCLUB" | "SPANDHAN" | "OTHER"
+
 export type POST = {
-    eventName: string
-    eventAuthority: "fest" | "club"
-    eventDescription: string
-    eventDisplayImageURL: string
-    eventFrom: Date
-    eventTo: Date
-    eventStartTime: Date
-    eventEndTime: Date
+    name: string;
+    description: string;
+    startDate: Date;
+    endDate: Date;
+    startTime: Date;
+    endTime: Date;
+    organizedBY: organizer;
 }
