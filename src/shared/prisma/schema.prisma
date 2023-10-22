@@ -55,28 +55,30 @@ model event {
   endDate       DateTime
   startTime     DateTime
   endTime       DateTime
-  organizedBY   organizer
+  organizer     organizer
   isActive      Boolean             @default(true)
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
-  coordinatedBy event_coordinator[]
+  coordinators  event_coordinator[]
   images        event_image[]
+  report        event_report?       @relation(fields: [reportId], references: [id])
+  reportId      Int?
 }
 
 model event_coordinator {
-  id        Int         @id @default(autoincrement())
-  firstName String
-  lastName  String
-  email     String
-  contNo    String
-  dept      department
-  course    String?
-  type      coordinator @default(STUDENT)
-  isActive  Boolean     @default(true)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  event     event       @relation(fields: [eventId], references: [id])
-  eventId   Int
+  id         Int         @id @default(autoincrement())
+  name       String
+  email      String      @unique
+  contNo     String
+  department department?
+  course     String?
+  semister   String?
+  type       coordinator @default(STUDENT)
+  isActive   Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  event      event       @relation(fields: [eventId], references: [id])
+  eventId    Int
 }
 
 model event_image {
@@ -86,4 +88,13 @@ model event_image {
   event    event   @relation(fields: [eventId], references: [id])
   eventId  Int
   isActive Boolean @default(true)
+}
+
+model event_report {
+  id       Int     @id @default(autoincrement())
+  name     String
+  url      String
+  eventId  Int     @unique
+  isActive Boolean @default(true)
+  event    event[]
 }

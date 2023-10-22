@@ -1,6 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-export const store = configureStore({
+export interface IAppState {
+}
+
+export const store = configureStore<IAppState>({
     reducer: {
     }
 })

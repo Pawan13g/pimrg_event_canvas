@@ -3,12 +3,12 @@ type type = FACULTY | STUDENT
 
 
 export type PUT = {
-    firstName: string;
-    lastName: string;
+    name: string;
     email: string;
     contNo: string;
-    dept: dept;
-    course: string;
+    department?: dept;
+    course?: string;
+    semister?: string;
     type: type;
 }
 

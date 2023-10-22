@@ -1,5 +1,4 @@
 export type POST = {
+    url: string;
     name: string;
-    base64String: string;
-    eventId: number;
 }

@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     distDir: '_next',
-    basePath: '/node',
     images: {
-        domains: ["images.unsplash.com", "source.unsplash.com"],
+        domains: ["images.unsplash.com", "source.unsplash.com", "localhost"],
     },
+    experimental: {
+        serverActions: true
+    }
 }
 
 module.exports = nextConfig

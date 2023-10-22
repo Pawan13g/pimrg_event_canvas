@@ -1,7 +1,7 @@
 
 import { NextResponse } from "next/server";
 import prisma from "@/shared/prisma/db";
-import { POST } from "../req.types";
+import { POST } from "../types";
 
 
 export async function GET(request: Request, { params: { id } }: { params: { id: number } }) {
