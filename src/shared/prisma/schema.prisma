@@ -61,8 +61,7 @@ model event {
   updatedAt     DateTime            @updatedAt
   coordinators  event_coordinator[]
   images        event_image[]
-  report        event_report?       @relation(fields: [reportId], references: [id])
-  reportId      Int?
+  report        event_report?
 }
 
 model event_coordinator {
@@ -94,7 +93,7 @@ model event_report {
   id       Int     @id @default(autoincrement())
   name     String
   url      String
-  eventId  Int     @unique
   isActive Boolean @default(true)
-  event    event[]
+  eventId  Int     @unique
+  event    event   @relation(fields: [eventId], references: [id])
 }

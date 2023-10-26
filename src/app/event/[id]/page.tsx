@@ -26,7 +26,7 @@ import Link from 'next/link';
 const fetchEvent = async (id: string) => {
 
     try {
-        const response: AxiosResponse<APIResponse<EventType>> = await axios.get(EVENT_API.replace(':id', id));
+        const response: AxiosResponse<APIResponse<EventType>> = await axios.get(`${EVENTS_API}?id=${id}`);
         return response.data.data;
     } catch (error: any) {
         throw new Error(error.message)
@@ -35,7 +35,7 @@ const fetchEvent = async (id: string) => {
 
 
 
-export default async function EventPage({ props, params: { id } }: { props: any, params: { id: string } }) {
+export default async function EventPage({ params, searchParams: { id }, }: { params: { id: string }, searchParams: { [key: string]: string } }) {
 
     const event = await fetchEvent(id);
 
@@ -48,7 +48,7 @@ export default async function EventPage({ props, params: { id } }: { props: any,
             <div>
                 <h3 className="text-lg font-medium flex gap-2 items-center">
                     {event?.name.toUpperCase()}
-                    <Link href={`${id}/edit`}><BiEditAlt className="hover:scale-125 transition-all hover:text-purple-500" /></Link>
+                    <Link href={`${params.id}/edit?id=${id}`}><BiEditAlt className="hover:scale-125 transition-all hover:text-purple-500" /></Link>
                 </h3>
                 <p className="text-sm text-muted-foreground">
                     {event?.description}
@@ -62,13 +62,14 @@ export default async function EventPage({ props, params: { id } }: { props: any,
                 <div className='col-span-7 space-y-4'>
                     <h1 className=' font-semibold'>EVENT IMAGES</h1>
 
-                    <div className='max-h-[470px] overflow-auto mr-4'>
+                    <div className='overflow-auto mr-4'>
                         <div className='grid grid-cols-3 gap-8'>
                             {event?.images.map((image: event_image, index: number) => (
-                                <div key={index} className="space-y-3 overflow-hidden rounded-md">
+                                <div key={index} className="space-y-3 overflow-hidden rounded-md  border">
                                     <Image
-                                        src={image.url}
+                                        src={`${process.env.NEXT_UPLOAD_DIRECTORY}/${image.url}`}
                                         alt={"Event Image"}
+                                        unoptimized={true}
                                         width={250}
                                         height={330}
                                         className="h-auto w-auto object-cover aspect-video"
@@ -85,14 +86,15 @@ export default async function EventPage({ props, params: { id } }: { props: any,
 
                     <div className='space-y-4'>
 
-                        <Button className='w-full border' variant="secondary" size="sm">
+                        <Link href={`${id}/images-download`} target='_blank' className='inline-flex items-center cursor-default justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 rounded-md px-3 w-full border'>
                             <CgImage className="text-lg mr-2" />
                             Download Images
-                        </Button>
-                        <Button className='w-full' size="sm">
+                        </Link>
+
+                        <a className='w-full inline-flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-md px-3' href={`${process.env.NEXT_UPLOAD_DIRECTORY}/${event.report.url}`} download={true}>
                             <HiOutlineDocumentReport className="text-lg mr-2" />
                             Download Report
-                        </Button>
+                        </a>
 
                         <Card className='w-full'>
                             <CardHeader className='p-4'>
@@ -106,8 +108,8 @@ export default async function EventPage({ props, params: { id } }: { props: any,
                                 <div className="space-y-3">
                                     <h4 className="text-sm text-gray-600 font-medium">FACULTY COORDINATORS</h4>
                                     <div className='flex flex-wrap gap-2'>
-                                        {facultyCoordinator?.map((coordinator: event_coordinator) => (
-                                            <Badge className='text-[10px]' color='gold'>{coordinator.name}</Badge>
+                                        {facultyCoordinator?.map((coordinator: event_coordinator, index) => (
+                                            <Badge key={index} className='text-[10px]' color='gold'>{coordinator.name}</Badge>
                                         ))}
                                     </div>
                                 </div>
@@ -117,8 +119,8 @@ export default async function EventPage({ props, params: { id } }: { props: any,
                                 <div className="space-y-3">
                                     <h4 className="text-sm text-gray-600 font-medium">STUDENT COORDINATORS</h4>
                                     <div className='flex flex-wrap gap-2'>
-                                        {studentCoordinator?.map((coordinator: event_coordinator) => (
-                                            <Badge className='text-[10px]' color='red'>{coordinator.name}</Badge>
+                                        {studentCoordinator?.map((coordinator: event_coordinator, index) => (
+                                            <Badge key={index} className='text-[10px]' color='red'>{coordinator.name}</Badge>
                                         ))}
                                     </div>
                                 </div>

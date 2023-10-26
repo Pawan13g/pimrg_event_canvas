@@ -1,11 +1,15 @@
 // ORM CLIENT 
 import prisma from "@/shared/prisma/db";
 
+// IO LIBS
+import fs from 'fs'
+import path from "path";
+
 // TYPES
+import { NextRequest, NextResponse } from "next/server";
 import { PUT } from "../types";
 import { POST as coordinator } from '../coordinator/types';
 import { POST as image } from '../image/types';
-import { NextResponse } from "next/server";
 
 
 export async function DELETE(req: Request, { params: { id } }: { params: { id: number } }) {
@@ -23,32 +27,20 @@ export async function DELETE(req: Request, { params: { id } }: { params: { id: n
     }
 }
 
-export async function GET(req: Request, { params: { id } }: { params: { id: string } }) {
-
-    if (!id)
-        return NextResponse.json({ error: true, success: false, msg: "unsufficient parimeters", data: null }, { status: 400 });
-
-    try {
-        const data = await prisma.event.findFirst({ where: { name: id }, include: { coordinators: true, images: true } });
-
-        return NextResponse.json({ error: false, success: true, msg: "success", data }, { status: 200 });
-
-    } catch (error: any) {
-        return NextResponse.json({ error: true, success: false, msg: error.message, data: null }, { status: 400 });
-    }
-
-}
-
 export async function PUT(req: Request, { params: { id } }: { params: { id: number } }) {
 
     try {
-        const { name, organizer, description, startDate, endDate, startTime, endTime, coordinators, images }: PUT = await req.json();
+        const { name, organizer, description, startDate, endDate, startTime, endTime, coordinators, images, report, coverImage }: PUT = await req.json();
 
-        if (!id)
-            return NextResponse.json({ error: true, success: false, msg: "unsufficient parimeters", data: null }, { status: 400 });
+
+        if (!id) return NextResponse.json({ error: true, success: false, msg: "unsufficient parimeters", data: null }, { status: 400 });
 
         if (!name || !organizer || !description || !startDate || !endDate || !startTime || !endTime)
             return NextResponse.json({ error: true, success: false, msg: "unsufficient parimeters", data: null }, { status: 400 });
+
+        const prevData = await prisma.event.findFirst({ where: { id: Number(id) }, include: { coordinators: true, images: true, report: true } });
+
+        if (!prevData) return NextResponse.json({ error: true, success: false, msg: "event not found", data: null }, { status: 404 });
 
         const data = await prisma.event.update({ where: { id: Number(id) }, data: { name, organizer, description, startDate, endDate, startTime, endTime } });
 
@@ -64,9 +56,32 @@ export async function PUT(req: Request, { params: { id } }: { params: { id: numb
             else await prisma.event_coordinator.create({ data: { name, email, contNo, department, course, semister, type, eventId: id } });
         });
 
-        images && images.map(async (image: image) => {
-            await prisma.event_image.create({ data: { name: image.name, url: image.url, eventId: id } });
+        // add new images if added
+        images && images.map(async ({ url, name }: image) => {
+            const imageBuffer = Buffer.from(url.split(",")[1], 'base64');
+            const imageRelativePath = `uploads/images/${name}`
+            const imageOutputPath = path.join(process.cwd(), 'public', imageRelativePath);
+            fs.writeFileSync(imageOutputPath, imageBuffer);
+            await prisma.event_image.create({ data: { name: name, url: imageRelativePath, eventId: id } });
         })
+
+        // update cover image if exits
+        if (coverImage && coverImage.name && coverImage.url) {
+            const coverImageBuffer = Buffer.from(coverImage.url.split(",")[1], 'base64');
+            const coverImageRelativePath = `uploads/images/${coverImage.name}`
+            const coverImageOutputPath = path.join(process.cwd(), 'public', coverImageRelativePath);
+            fs.writeFileSync(coverImageOutputPath, coverImageBuffer);
+            await prisma.event_image.create({ data: { name: coverImage.name, url: coverImageRelativePath, eventId: id } });
+        }
+
+        // add new report if exits
+        if (report && report.url && report.name) {
+            const reportBuffer = Buffer.from(report.url.split(",")[1], 'base64');
+            const reportRelativePath = `uploads/reports/${report.name}`
+            const reportOutputPath = path.join(process.cwd(), 'public', reportRelativePath);
+            fs.writeFileSync(reportOutputPath, reportBuffer);
+            await prisma.event_report.create({ data: { name: name, url: reportRelativePath, eventId: data.id } });
+        }
 
         return NextResponse.json({ error: false, success: true, msg: "event updated", data }, { status: 200 });
 

@@ -38,3 +38,5 @@ export function convertFilesToBase64Array(imageFiles: FileList | null, callback:
   // Start processing the first image
   readNext(0);
 }
+
+export function purifyString(str: string) { return str.replace(/[^a-zA-Z0-9]/g, "_") } 

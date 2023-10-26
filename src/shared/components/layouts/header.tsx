@@ -4,6 +4,7 @@ import {
     Menubar
 } from "@/shared/components/ui/menubar"
 import { Button } from '../ui/button'
+import Link from 'next/link'
 
 const Header = () => {
     return (
@@ -17,7 +18,9 @@ const Header = () => {
 
 
             <div>
-                <Button className='px-4' size="sm">Login</Button>
+                <Link href='/login'>
+                    <Button className='px-4' size="sm">Login</Button>
+                </Link>
             </div>
 
         </Menubar>

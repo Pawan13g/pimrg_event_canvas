@@ -1,13 +1,18 @@
 "use client";
-import Header from '@/shared/components/layouts/header'
+
+// GLOBAL STYLES
 import './globals.css'
-import SideBar from '@/shared/components/layouts/sidebar'
+
+// NOTIFICATION TOASTER
+import { Toaster } from 'react-hot-toast';
+
+// PROVIDERS
 import { Provider } from 'react-redux';
-import { store } from '@/shared/rdx/store'
-import { Toaster } from '@/shared/components/ui/toaster';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from '@/shared/components/ui/tooltip';
-import Breadcrumb from '@/shared/components/ui/breadcrumb';
+
+// REDUX STORE
+import { store } from '@/shared/rdx/store'
 
 export default function RootLayout({
   children,
@@ -21,14 +26,7 @@ export default function RootLayout({
         <TooltipProvider>
           <body className='overflow-hidden'>
             <Provider store={store}>
-              <Header />
-              <div className='flex w-full'>
-                <SideBar />
-                <div className='px-4 py-6 lg:px-8 w-full h-[calc(100vh_-_50px)] overflow-auto'>
-                  <Breadcrumb />
-                  {children}
-                </div>
-              </div>
+              {children}
               <Toaster />
             </Provider>
           </body>

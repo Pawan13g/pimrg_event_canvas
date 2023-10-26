@@ -1,19 +1,32 @@
+// DB ORM CLIENT
+import prisma from "@/shared/prisma/db";
+
+// IO LIBS
+import path from "path";
+import fs from 'fs'
+
+// TYPES
 import { NextRequest, NextResponse } from "next/server";
 import { POST } from "./types";
-import prisma from "@/shared/prisma/db";
 import { POST as coordinator } from './coordinator/types';
 import { POST as image } from './image/types';
 
-import path from "path";
-import { v4 as uuidv4 } from 'uuid';
-import fs from 'fs'
+export async function GET(req: NextRequest) {
 
-
-export async function GET() {
+    const id = new URL(req.url).searchParams.get('id');
 
     try {
-        const data = await prisma.event.findMany({ where: { isActive: true } })
-        return NextResponse.json({ error: false, success: true, msg: "success", data }, { status: 200 });
+
+        if (!id) {
+            const data = await prisma.event.findMany({ where: { isActive: true } })
+            return NextResponse.json({ error: false, success: true, msg: "success", data }, { status: 200 });
+        }
+
+        else {
+            const data = await prisma.event.findUnique({ where: { id: Number(id) }, include: { coordinators: true, images: true, report: true }, });
+            if (!data) return NextResponse.json({ error: false, success: true, msg: "success", data }, { status: 404 });
+            return NextResponse.json({ error: false, success: true, msg: "success", data }, { status: 200 });
+        }
 
     } catch (error: any) {
         return NextResponse.json({ error: true, success: false, msg: error.message, data: null }, { status: 400 });
@@ -21,26 +34,45 @@ export async function GET() {
 }
 
 
-
 export async function POST(req: NextRequest) {
-    const { name, organizer, description, startDate, endDate, startTime, endTime, coordinators, images }: POST = await req.json();
-
-    let coverImageURL = process.env.DUMMY_IMAGE_URL as string;
+    const { name, organizer, description, startDate, endDate, startTime, endTime, coordinators, images, report, coverImage }: POST = await req.json();
 
     if (!name || !organizer || !description || !startDate || !endDate || !startTime || !endTime)
         return NextResponse.json({ error: true, success: false, msg: "unsufficient parimeters", data: null }, { status: 400 });
 
     try {
-        const data = await prisma.event.create({ data: { name, organizer, description, startDate, endDate, startTime, endTime, coverImageURL } });
+        const data = await prisma.event.create({ data: { name, organizer, description, startDate, endDate, startTime, endTime } });
 
         coordinators.map(async (coordiantor: coordinator) => {
             const { name, email, contNo, department, course, semister, type } = coordiantor;
             await prisma.event_coordinator.create({ data: { name, email, contNo, department, course, semister, type, eventId: data.id } });
         });
 
-        images.map(async (image: image) => {
-            await prisma.event_image.create({ data: { name: image.name, url: image.url, eventId: data.id } });
+        // upload event images to images directory
+        images.map(async ({ url, name }: image) => {
+            const buffer = Buffer.from(url.split(",")[1], 'base64');
+            const imageRelativePath = `uploads/images/${name}`
+            const outputPath = path.join(process.cwd(), 'public', imageRelativePath);
+            fs.writeFileSync(outputPath, buffer);
+            await prisma.event_image.create({ data: { name: name, url: imageRelativePath, eventId: data.id } });
         })
+
+        // upload event coverimage to images directory
+        const coverImageBuffer = Buffer.from(coverImage.url.split(",")[1], 'base64');
+        const coverImageRelativePath = `uploads/images/${coverImage.name}`
+        const coverImageOutputPath = path.join(process.cwd(), 'public', coverImageRelativePath);
+        fs.writeFileSync(coverImageOutputPath, coverImageBuffer);
+        await prisma.event_image.create({ data: { name: coverImage.name, url: coverImageRelativePath, eventId: data.id } });
+
+        // update event coverimage index
+        await prisma.event.update({ where: { id: data.id }, data: { coverImageURL: coverImageRelativePath } });
+
+        // upload event report to report directory
+        const reportBuffer = Buffer.from(report.url.split(",")[1], 'base64');
+        const reportRelativePath = `uploads/reports/${report.name}`
+        const reportOutputPath = path.join(process.cwd(), 'public', reportRelativePath);
+        fs.writeFileSync(reportOutputPath, reportBuffer);
+        await prisma.event_report.create({ data: { name: name, url: reportRelativePath, eventId: data.id } });
 
         return NextResponse.json({ error: false, success: true, msg: "success", data }, { status: 201 });
 

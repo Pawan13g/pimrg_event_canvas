@@ -1,4 +1,4 @@
-import { coordinator, event, event_coordinator, event_image } from "@prisma/client";
+import { coordinator, event, event_coordinator, event_image, event_report } from "@prisma/client";
 
 export type APIResponse<T> = {
     error: boolean,
@@ -15,5 +15,6 @@ export type EventType = event & {
     endTime: string;
     images: event_image[];
     coordinators: event_coordinator[];
+    report: event_report;
 }
 

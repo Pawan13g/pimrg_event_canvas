@@ -1,4 +1,3 @@
-
 // ORM CLIENT
 import prisma from "@/shared/prisma/db";
 
@@ -18,7 +17,7 @@ export async function GET(req: NextRequest, { params: { eventId } }: { params: {
         if (!eventId)
             return NextResponse.json({ error: true, success: false, msg: "unsufficient parimeters", data: null }, { status: 400 });
 
-        const data = await prisma.event_image.findMany({ where: { eventId: Number(eventId), isActive: true } });
+        const data = await prisma.event_image.findMany({ where: { eventId: Number(eventId), isActive: true }, include: { event: true } });
 
         if (!data)
             return NextResponse.json({ error: true, success: false, msg: `no image found for eventID: ${eventId}`, data: null }, { status: 400 });
@@ -42,9 +41,10 @@ export async function POST(req: NextRequest, { params: { eventId } }: { params: 
 
         images.map(async ({ url, name }: POST) => {
             const buffer = Buffer.from(url.split(",")[1], 'base64');
-            const outputPath = path.join(process.cwd(), '/images/', name);
+            const imageRelativePath = `uploads/images/${name}`
+            const outputPath = path.join(process.cwd(), 'public', imageRelativePath);
             fs.writeFileSync(outputPath, buffer);
-            await prisma.event_image.create({ data: { name: name, url: outputPath, eventId } });
+            await prisma.event_image.create({ data: { name: name, url: imageRelativePath, eventId: Number(eventId) } });
         })
 
         return NextResponse.json({ error: false, success: true, msg: "success", data: null }, { status: 200 });

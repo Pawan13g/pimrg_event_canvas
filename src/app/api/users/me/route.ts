@@ -1,6 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+
+//DB ORM CLIENT 
 import prisma from "@/shared/prisma/db";
+
+// LIBS
 import jwt from 'jsonwebtoken';
+
+// TYPES
+import { NextRequest, NextResponse } from "next/server";
 import { JWTPayloadType } from "../req.types";
 
 

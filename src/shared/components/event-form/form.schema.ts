@@ -63,10 +63,16 @@ export const EventFormSchema = z.object({
             url: z.string()
         })
     ).optional(),
+    
     report: z.object({
         name: z.string({ required_error: "report name is required.", }),
         url: z.string()
-    }).optional()
+    }).optional(),
+
+    coverImage: z.object({
+        name: z.string(),
+        url: z.string()
+    }).optional(),
 })
 
 export type EventFormValues = z.infer<typeof EventFormSchema>

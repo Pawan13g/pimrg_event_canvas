@@ -20,7 +20,7 @@ const Breadcrumb = () => {
                         {
                             index === 0 ? (
                                 <>
-                                    <Link href={'/'} className="opacity-80 hover:text-purple-500">
+                                    <Link href={`/${pathArr[0]}`} className="opacity-80 hover:text-purple-500">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             className="h-4 w-4"

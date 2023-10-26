@@ -14,6 +14,8 @@ export type POST = {
     organizer: organizer;
     coordinators: coordinator[];
     images: image[];
+    coverImage: { url: string; name: string };
+    report: { url: string; name: string };
 }
 
 export type PUT = POST & {}

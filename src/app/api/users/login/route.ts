@@ -1,7 +1,13 @@
+//DB ORM CLIENT 
+import prisma from "@/shared/prisma/db";
+
+// LIBS
+import jwt from 'jsonwebtoken';
+
+// TYPES
 import { NextRequest, NextResponse } from "next/server";
 import { LoginType } from "../req.types";
-import prisma from "@/shared/prisma/db";
-import jwt from 'jsonwebtoken';
+
 
 export async function POST(req: NextRequest) {
     const { email, password }: LoginType = await req.json();

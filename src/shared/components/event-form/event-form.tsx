@@ -59,7 +59,7 @@ import DatePicker from "@/shared/components/ui/date-picker"
 
 // ICONS
 import { AiOutlinePlusCircle } from "react-icons/ai"
-import { PiImagesSquareThin } from "react-icons/pi";
+import { PiImageSquareThin, PiImagesSquareThin } from "react-icons/pi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 
 // UTILS FUNCTIONS
@@ -72,6 +72,7 @@ import { EventFormSchema, EventFormValues } from "./form.schema";
 // ENDPOINTS
 import { EVENTS_API, EVENT_API } from "@/shared/constants/endpoint"
 import { format } from "path";
+import { BiImageAdd } from "react-icons/bi";
 
 function useHandleSubmit(event?: EventType) {
 
@@ -119,7 +120,7 @@ export default function EventForm(props: props) {
                     department: c.department ? c.department : undefined,
                     course: c.course ? c.course : undefined,
                     semister: c.semister ? c.semister : undefined,
-                })),
+                }))
         }
     })
 
@@ -147,6 +148,7 @@ export default function EventForm(props: props) {
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit((data) => {
+                    console.log(data)
                     mutate({ body: data, params: { id: event?.id } })
                 })} className="space-y-8">
                     <FormField
@@ -607,46 +609,77 @@ export default function EventForm(props: props) {
 
                     <div>
 
-                        <FormField
-                            //@ts-ignore
-                            name="imgs"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem className="space-y-4">
-                                    <FormLabel>EVENT IMAGES</FormLabel>
-                                    <FormControl>
-                                        <Upload
-                                            className="col-span-1"
-                                            title={event ? 'Click here to upload more images' : 'Click here to upload event images'}
-                                            icon={<PiImagesSquareThin className="text-6xl" />}
-                                            onChange={(e) => {
-                                                convertFilesToBase64Array(e.target.files, (base64Array: any) => {
-                                                    form.setValue('images', base64Array)
-                                                    setImages(base64Array);
-                                                })
-                                            }}
-                                        />
-                                    </FormControl>
+                        <div className="grid grid-cols-8 gap-4">
 
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            <FormField
+                                //@ts-ignore
+                                name="imgs"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem className="space-y-4 col-span-6">
+                                        <FormLabel>EVENT IMAGES</FormLabel>
+                                        <FormControl>
+                                            <Upload
+                                                className="col-span-1"
+                                                title={event ? 'Click here to upload more images' : 'Click here to upload event images'}
+                                                icon={<PiImagesSquareThin className="text-6xl" />}
+                                                onChange={(e) => {
+                                                    convertFilesToBase64Array(e.target.files, (base64Array: any) => {
+                                                        form.setValue('images', base64Array)
+                                                        setImages((prev) => prev.concat(base64Array));
+                                                    })
+                                                }}
+                                            />
+                                        </FormControl>
+
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                //@ts-ignore
+                                name="coverImage"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem className="space-y-4 col-span-2">
+                                        <FormLabel>COVER IMAGE</FormLabel>
+                                        <FormControl>
+                                            <Upload
+                                                className="col-span-1"
+                                                title={event ? 'Click here to change the cover image' : 'Click here to upload cover image'}
+                                                icon={<PiImageSquareThin className="text-6xl" />}
+                                                multiple={false}
+                                                onChange={(e) => {
+                                                    convertFilesToBase64Array(e.target.files, (base64Array: any) => {
+                                                        field.onChange(base64Array[0]); // Array of base64 encoded files
+                                                        setImages((prev) => base64Array.concat(prev));
+                                                    })
+                                                }}
+                                            />
+                                        </FormControl>
+
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                        </div>
 
                         {!!images.length &&
                             <div className="my-6 space-y-6">
                                 <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">UPLOADED IMAGES</span>
-
                                 <div className="max-h-[400px] overflow-auto">
                                     <div className="grid grid-cols-4 gap-4 mr-2">
-                                        {images.map((img: any, index: number) => (
-                                            <div key={index} className="overflow-hidden rounded-md aspect-video">
+                                        {images.map((img: { url: string, name: string }, index: number) => (
+                                            <div key={index} className="overflow-hidden rounded-md aspect-video border">
                                                 <Image
-                                                    src={img.url}
+                                                    src={img.url.startsWith('uploads') ? `http://localhost:3000/${img.url}` : img.url}
+                                                    unoptimized={true}
                                                     alt={"Event Image"}
                                                     width={250}
                                                     height={330}
-                                                    className="h-auto w-auto object-cover transition-all hover:scale-105"
+                                                    className="h-auto w-auto object-cover transition-all hover:scale-105 aspect-video"
                                                 />
                                             </div>
                                         ))}
