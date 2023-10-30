@@ -1,5 +1,11 @@
+"use client";
+
+import { useEffect } from 'react';
+
 // LIBS
-import axios, { AxiosResponse } from 'axios'
+import { useQuery } from '@tanstack/react-query';
+import axios, { AxiosResponse } from 'axios';
+
 
 // UI COMPONENTS
 import Image from 'next/image'
@@ -40,9 +46,13 @@ const getEvents = async (eventsType: string | undefined = undefined) => {
 }
 
 
-export default async function Home({ searchParams: { eventsType } }: { searchParams: { [key: string]: string | undefined } }) {
+export default function Home({ searchParams: { eventsType } }: { searchParams: { [key: string]: string | undefined } }) {
 
-    const events: EventType[] = await getEvents(eventsType);
+    const { data: events, isLoading, isError, error } = useQuery(['events', eventsType], () => getEvents(eventsType));
+
+    useEffect(() => {
+        if (isError) throw new Error('Error Occured');
+    }, [isError]);
 
     return (
         <div className="hidden md:block w-full">
@@ -88,12 +98,12 @@ export default async function Home({ searchParams: { eventsType } }: { searchPar
                             </div>
                             <Separator className="my-4" />
                             <div className="grid grid-cols-4 gap-4">
-                                {events.length ? events.map((event: event, index: number) => (
+                                {events && events.length ? events.map((event: event, index: number) => (
                                     <Link key={index} href={`event/${event.name}?id=${event.id}`}>
                                         <div className="space-y-3">
                                             <div className="overflow-hidden rounded-md border">
                                                 <Image
-                                                    src={`${process.env.NEXT_UPLOAD_DIRECTORY}/${event.coverImageURL}`}
+                                                    src={`${process.env.NEXT_PUBLIC_UPLOAD_DIRECTORY}/${event.coverImageURL}`}
                                                     alt={"Event Image"}
                                                     unoptimized={true}
                                                     width={250}
@@ -131,12 +141,12 @@ export default async function Home({ searchParams: { eventsType } }: { searchPar
                             </div>
                             <Separator className="my-4" />
                             <div className="grid grid-cols-4 gap-4">
-                                {events.length ? events.map((event: event, index: number) => (
+                                {events && events.length ? events.map((event: event, index: number) => (
                                     <Link key={index} href={`event/${event.name}?id=${event.id}`}>
                                         <div className="space-y-3">
                                             <div className="overflow-hidden rounded-md border">
                                                 <Image
-                                                    src={`${process.env.NEXT_UPLOAD_DIRECTORY}/${event.coverImageURL}`}
+                                                    src={`${process.env.NEXT_PUBLIC_UPLOAD_DIRECTORY}/${event.coverImageURL}`}
                                                     alt={"Event Image"}
                                                     unoptimized={true}
                                                     width={250}
