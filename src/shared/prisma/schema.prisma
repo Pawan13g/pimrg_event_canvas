@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum role {
+  ADMIN
+}
+
+enum coordinator {
+  FACULTY
+  STUDENT
+}
+
+enum department {
+  COMMERCE
+  IT
+  LAW
+}
+
+enum organizer {
+  CSCLUB
+  FINANCECLUB
+  HRCLUB
+  MARKETINGCLUB
+  SPANDHAN
+  OTHER
+}
+
+model user {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String
+  password  String
+  role      role     @default(ADMIN)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model event {
+  id            Int                 @id @default(autoincrement())
+  name          String
+  description   String
+  coverImageURL String?
+  startDate     DateTime
+  endDate       DateTime
+  startTime     DateTime
+  endTime       DateTime
+  organizer     organizer
+  isActive      Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  coordinators  event_coordinator[]
+  images        event_image[]
+  report        event_report?
+}
+
+model event_coordinator {
+  id         Int         @id @default(autoincrement())
+  name       String
+  email      String      @unique
+  contNo     String
+  department department?
+  course     String?
+  semister   String?
+  type       coordinator @default(STUDENT)
+  isActive   Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  event      event       @relation(fields: [eventId], references: [id])
+  eventId    Int
+}
+
+model event_image {
+  id       Int     @id @default(autoincrement())
+  name     String
+  url      String
+  event    event   @relation(fields: [eventId], references: [id])
+  eventId  Int
+  isActive Boolean @default(true)
+}
+
+model event_report {
+  id       Int     @id @default(autoincrement())
+  name     String
+  url      String
+  isActive Boolean @default(true)
+  eventId  Int     @unique
+  event    event   @relation(fields: [eventId], references: [id])
+}
