@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -47,37 +47,37 @@ model user {
 }
 
 model event {
-  id            Int                 @id @default(autoincrement())
-  name          String
-  description   String
-  coverImageURL String?
-  startDate     DateTime
-  endDate       DateTime
-  startTime     DateTime
-  endTime       DateTime
-  organizer     organizer
-  isActive      Boolean             @default(true)
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  coordinators  event_coordinator[]
-  images        event_image[]
-  report        event_report?
+  id           Int                 @id @default(autoincrement())
+  name         String
+  description  String
+  startDate    DateTime
+  endDate      DateTime
+  startTime    DateTime
+  endTime      DateTime
+  organizer    organizer
+  isActive     Boolean             @default(true)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  coordinators event_coordinator[]
+  images       event_image[]
+  report       event_report?
+  cover_image  event_cover_image?
 }
 
 model event_coordinator {
-  id         Int         @id @default(autoincrement())
-  name       String
-  email      String      @unique
-  contNo     String
-  department department?
-  course     String?
-  semister   String?
-  type       coordinator @default(STUDENT)
-  isActive   Boolean     @default(true)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  event      event       @relation(fields: [eventId], references: [id])
-  eventId    Int
+  id             Int         @id @default(autoincrement())
+  name           String
+  email          String      @unique
+  contNo         String
+  department     department?
+  batchStartDate String
+  batchEndDate   String
+  type           coordinator @default(STUDENT)
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  event          event       @relation(fields: [eventId], references: [id])
+  eventId        Int
 }
 
 model event_image {
@@ -86,6 +86,15 @@ model event_image {
   url      String
   event    event   @relation(fields: [eventId], references: [id])
   eventId  Int
+  isActive Boolean @default(true)
+}
+
+model event_cover_image {
+  id       Int     @id @default(autoincrement())
+  name     String
+  url      String
+  event    event   @relation(fields: [eventId], references: [id])
+  eventId  Int     @unique
   isActive Boolean @default(true)
 }
 

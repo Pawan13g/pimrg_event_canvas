@@ -59,15 +59,15 @@ export async function PUT(req: Request, { params: { id } }: { params: { id: numb
         const data = await prisma.event.update({ where: { id: Number(id) }, data: { name, organizer, description, startDate, endDate, startTime, endTime } });
 
         coordinators && coordinators.map(async (coordiantor: coordinator) => {
-            const { name, email, contNo, department, course, semister, type } = coordiantor;
+            const { name, email, contNo, department, batchStartDate, batchEndDate, type } = coordiantor;
 
             const isExist = await prisma.event_coordinator.findUnique({ where: { email } });
 
             // update exsiting one's
-            if (isExist) await prisma.event_coordinator.update({ where: { id: isExist.id }, data: { name, email, contNo, department, course, semister, type, eventId: data.id } });
+            if (isExist) await prisma.event_coordinator.update({ where: { id: isExist.id }, data: { name, email, contNo, department, type, eventId: data.id } });
 
             // if not exist, crate new one
-            else await prisma.event_coordinator.create({ data: { name, email, contNo, department, course, semister, type, eventId: id } });
+            else await prisma.event_coordinator.create({ data: { name, email, contNo, department, batchStartDate, batchEndDate, type, eventId: id } });
         });
 
         // add new images if added
@@ -85,7 +85,7 @@ export async function PUT(req: Request, { params: { id } }: { params: { id: numb
             const coverImageRelativePath = `uploads/images/${coverImage.name}`
             const coverImageOutputPath = path.join(process.cwd(), 'public', coverImageRelativePath);
             fs.writeFileSync(coverImageOutputPath, coverImageBuffer);
-            await prisma.event_image.create({ data: { name: coverImage.name, url: coverImageRelativePath, eventId: id } });
+            await prisma.event_cover_image.create({ data: { name: coverImage.name, url: coverImageRelativePath, eventId: id } });
         }
 
         // add new report if exits

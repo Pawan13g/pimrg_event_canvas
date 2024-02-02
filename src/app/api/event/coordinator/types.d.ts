@@ -7,8 +7,8 @@ export type PUT = {
     email: string;
     contNo: string;
     department?: dept;
-    course?: string;
-    semister?: string;
+    batchStartDate: string;
+    batchEndDate: string;
     type: type;
 }
 

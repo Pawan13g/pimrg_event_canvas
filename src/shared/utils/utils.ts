@@ -50,4 +50,4 @@ export function paramsToString(data: any) {
   return ret.join('&');
 }
 
-export function formatTime(time: string) { return dayjs(time).format('hh:mm A') }
+export function formatTime(time: Date) { return dayjs(time.toISOString()).format('hh:mm A') }

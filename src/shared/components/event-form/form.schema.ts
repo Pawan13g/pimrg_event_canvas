@@ -52,8 +52,8 @@ export const EventFormSchema = z.object({
                     }),
 
                 department: z.enum(["COMMERCE", "IT", "LAW"]).optional(),
-                course: z.enum(["BCA", "MBA", "BBA", "BCOM", "BBA LLB", "B.COM LLB", "B.A.LLB", "LL.M"]).optional(),
-                semister: z.enum(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]).optional(),
+                batchStartDate: z.string({ required_error: "Batch start year is required." }).optional(),
+                batchEndDate: z.string({ required_error: "Batch end year required." }).optional(),
                 type: z.enum(["FACULTY", "STUDENT"]),
             })
         ),
@@ -63,7 +63,7 @@ export const EventFormSchema = z.object({
             url: z.string()
         })
     ).optional(),
-    
+
     report: z.object({
         name: z.string({ required_error: "report name is required.", }),
         url: z.string()

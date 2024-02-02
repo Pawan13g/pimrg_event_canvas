@@ -146,9 +146,9 @@ const Header = () => {
                   )}
                   href={
                     searchTerm
-                      ? `/event?eventsType=all&name=${searchTerm}`
+                      ? `/events?name=${searchTerm}`
                       : date?.to && date?.from
-                      ? `/event?eventsType=all&to=${date.to.toDateString()}&from=${date.from.toDateString()}`
+                      ? `/event?to=${date.to.toDateString()}&from=${date.from.toDateString()}`
                       : ""
                   }
                 >
@@ -161,7 +161,7 @@ const Header = () => {
 
         {isFilterNeedsReset && (
           <Link
-            href="/event"
+            href="/"
             className={buttonVariants({ variant: "outline", size: "icon" })}
             onClick={() => (setSearchTerm(""), setDate(undefined))}
           >

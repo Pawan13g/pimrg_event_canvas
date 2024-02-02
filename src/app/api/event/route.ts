@@ -54,8 +54,8 @@ export async function POST(req: NextRequest) {
         const data = await prisma.event.create({ data: { name, organizer, description, startDate, endDate, startTime, endTime } });
 
         coordinators.map(async (coordiantor: coordinator) => {
-            const { name, email, contNo, department, course, semister, type } = coordiantor;
-            await prisma.event_coordinator.create({ data: { name, email, contNo, department, course, semister, type, eventId: data.id } });
+            const { name, email, contNo, department, batchEndDate, batchStartDate, type } = coordiantor;
+            await prisma.event_coordinator.create({ data: { name, email, contNo, department, batchEndDate, batchStartDate, type, eventId: data.id } });
         });
 
         // upload event images to images directory
@@ -72,10 +72,7 @@ export async function POST(req: NextRequest) {
         const coverImageRelativePath = `uploads/images/${coverImage.name}`
         const coverImageOutputPath = path.join(process.cwd(), 'public', coverImageRelativePath);
         fs.writeFileSync(coverImageOutputPath, coverImageBuffer);
-        await prisma.event_image.create({ data: { name: coverImage.name, url: coverImageRelativePath, eventId: data.id } });
-
-        // update event coverimage index
-        await prisma.event.update({ where: { id: data.id }, data: { coverImageURL: coverImageRelativePath } });
+        await prisma.event_cover_image.create({ data: { name: coverImage.name, url: coverImageRelativePath, eventId: data.id } });
 
         // upload event report to report directory
         const reportBuffer = Buffer.from(report.url.split(",")[1], 'base64');

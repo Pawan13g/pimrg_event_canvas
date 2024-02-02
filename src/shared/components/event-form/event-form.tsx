@@ -74,6 +74,8 @@ import { EventFormSchema, EventFormValues } from "./form.schema";
 import { ArrowLeft } from "lucide-react";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { TagRevalidator } from "./cache_revalidator";
+import { event_coordinator } from "@prisma/client";
+import { ScrollArea } from "../ui/scroll-area";
 
 function useHandleSubmit(event?: EventType) {
   const createEvent = async (data: any) => {
@@ -94,7 +96,6 @@ function useHandleSubmit(event?: EventType) {
 type props = {
   event?: EventType;
 };
-
 
 export default function EventForm(props: props) {
   const { event } = props;
@@ -120,8 +121,8 @@ export default function EventForm(props: props) {
         contNo: c.contNo,
         type: c.type,
         department: c.department ? c.department : undefined,
-        course: c.course ? c.course : undefined,
-        semister: c.semister ? c.semister : undefined,
+        batchStartDate: c.batchStartDate,
+        batchEndDate: c.batchStartDate,
       })),
     },
   });
@@ -131,6 +132,8 @@ export default function EventForm(props: props) {
     control: form.control,
   });
 
+  const { images, coverImage, report } = form.watch();
+
   const facultyFields = useMemo(
     () => fields.filter((field) => field.type === "FACULTY"),
     [fields]
@@ -139,13 +142,16 @@ export default function EventForm(props: props) {
     () => fields.filter((field) => field.type === "STUDENT"),
     [fields]
   );
-  const [images, setImages] = useState<{ url: string; name: string }[]>([]);
 
   useEffect(() => {
-    if (isSuccess) TagRevalidator(), router.push("/event");
+    if (isSuccess) TagRevalidator(), router.push("/events");
   }, [router, isSuccess]);
+
   useEffect(() => {
-    if (event) setImages(event.images);
+    if (event) {
+      if (event.images.length) form.setValue("images", event.images);
+      if (event.cover_image) form.setValue("coverImage", event.cover_image);
+    }
   }, [event]);
 
   return (
@@ -501,8 +507,8 @@ export default function EventForm(props: props) {
                     email: "",
                     contNo: "",
                     type: "STUDENT",
-                    course: "BCA",
-                    semister: "1",
+                    batchStartDate: "2021",
+                    batchEndDate: "2023",
                   })
                 }
               >
@@ -516,8 +522,8 @@ export default function EventForm(props: props) {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Contact No</TableHead>
-                  <TableHead>Course</TableHead>
-                  <TableHead>Semister</TableHead>
+                  <TableHead>Batch Start Year</TableHead>
+                  <TableHead>Batch End Year</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -591,7 +597,7 @@ export default function EventForm(props: props) {
                           //@ts-ignore
                           name={`coordinators[${fields.findIndex(
                             (e) => e.id === field.id
-                          )}].course`}
+                          )}].batchStartDate`}
                           control={form.control}
                           render={({ field }) => (
                             <FormItem>
@@ -603,24 +609,40 @@ export default function EventForm(props: props) {
                                 >
                                   <FormControl>
                                     <SelectTrigger className="md:w-[180px]">
-                                      <SelectValue placeholder="Course" />
+                                      <SelectValue placeholder="Batch Start Year" />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="BCA">BCA</SelectItem>
-                                    <SelectItem value="MBA">MBA</SelectItem>
-                                    <SelectItem value="BBA">BBA</SelectItem>
-                                    <SelectItem value="BCOM">BCOM</SelectItem>
-                                    <SelectItem value="BBA LLB">
-                                      BBA LLB
-                                    </SelectItem>
-                                    <SelectItem value="B.COM LLB">
-                                      B.COM LLB
-                                    </SelectItem>
-                                    <SelectItem value="B.A.LLB">
-                                      B.A.LLB
-                                    </SelectItem>
-                                    <SelectItem value="LL.M">LL.M</SelectItem>
+                                    <ScrollArea className="h-64">
+                                      <SelectItem value="2019">2019</SelectItem>
+                                      <SelectItem value="2020">2020</SelectItem>
+                                      <SelectItem value="2021">2021</SelectItem>
+                                      <SelectItem value="2022">2022</SelectItem>
+                                      <SelectItem value="2023">2023</SelectItem>
+                                      <SelectItem value="2024">2024</SelectItem>
+                                      <SelectItem value="2025">2025</SelectItem>
+                                      <SelectItem value="2026">2026</SelectItem>
+                                      <SelectItem value="2027">2027</SelectItem>
+                                      <SelectItem value="2028">2028</SelectItem>
+                                      <SelectItem value="2029">2029</SelectItem>
+                                      <SelectItem value="2030">2030</SelectItem>
+                                      <SelectItem value="2031">2031</SelectItem>
+                                      <SelectItem value="2032">2032</SelectItem>
+                                      <SelectItem value="2033">2033</SelectItem>
+                                      <SelectItem value="2034">2034</SelectItem>
+                                      <SelectItem value="2035">2035</SelectItem>
+                                      <SelectItem value="2036">2036</SelectItem>
+                                      <SelectItem value="2037">2037</SelectItem>
+                                      <SelectItem value="2038">2038</SelectItem>
+                                      <SelectItem value="2039">2039</SelectItem>
+                                      <SelectItem value="2040">2040</SelectItem>
+                                      <SelectItem value="2041">2041</SelectItem>
+                                      <SelectItem value="2042">2042</SelectItem>
+                                      <SelectItem value="2043">2043</SelectItem>
+                                      <SelectItem value="2044">2044</SelectItem>
+                                      <SelectItem value="2045">2045</SelectItem>
+                                      <SelectItem value="2046">2046</SelectItem>
+                                    </ScrollArea>
                                   </SelectContent>
                                 </Select>
                               </FormControl>
@@ -635,7 +657,7 @@ export default function EventForm(props: props) {
                           //@ts-ignore
                           name={`coordinators[${fields.findIndex(
                             (e) => e.id === field.id
-                          )}].semister`}
+                          )}].batchEndDate`}
                           control={form.control}
                           render={({ field }) => (
                             <FormItem>
@@ -647,40 +669,40 @@ export default function EventForm(props: props) {
                                 >
                                   <FormControl>
                                     <SelectTrigger className="md:w-[180px]">
-                                      <SelectValue placeholder="Semister" />
+                                      <SelectValue placeholder="Batch End Year" />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="1">
-                                      I<sup>st</sup>
-                                    </SelectItem>
-                                    <SelectItem value="2">
-                                      II<sup>nd</sup>
-                                    </SelectItem>
-                                    <SelectItem value="3">
-                                      III<sup>rd</sup>
-                                    </SelectItem>
-                                    <SelectItem value="4">
-                                      IV<sup>th</sup>
-                                    </SelectItem>
-                                    <SelectItem value="5">
-                                      V<sup>th</sup>
-                                    </SelectItem>
-                                    <SelectItem value="6">
-                                      VI<sup>th</sup>
-                                    </SelectItem>
-                                    <SelectItem value="7">
-                                      VII<sup>th</sup>
-                                    </SelectItem>
-                                    <SelectItem value="8">
-                                      VIII<sup>th</sup>
-                                    </SelectItem>
-                                    <SelectItem value="9">
-                                      IX<sup>th</sup>
-                                    </SelectItem>
-                                    <SelectItem value="10">
-                                      X<sup>th</sup>
-                                    </SelectItem>
+                                    <ScrollArea className="h-64">
+                                      <SelectItem value="2019">2019</SelectItem>
+                                      <SelectItem value="2020">2020</SelectItem>
+                                      <SelectItem value="2021">2021</SelectItem>
+                                      <SelectItem value="2022">2022</SelectItem>
+                                      <SelectItem value="2023">2023</SelectItem>
+                                      <SelectItem value="2024">2024</SelectItem>
+                                      <SelectItem value="2025">2025</SelectItem>
+                                      <SelectItem value="2026">2026</SelectItem>
+                                      <SelectItem value="2027">2027</SelectItem>
+                                      <SelectItem value="2028">2028</SelectItem>
+                                      <SelectItem value="2029">2029</SelectItem>
+                                      <SelectItem value="2030">2030</SelectItem>
+                                      <SelectItem value="2031">2031</SelectItem>
+                                      <SelectItem value="2032">2032</SelectItem>
+                                      <SelectItem value="2033">2033</SelectItem>
+                                      <SelectItem value="2034">2034</SelectItem>
+                                      <SelectItem value="2035">2035</SelectItem>
+                                      <SelectItem value="2036">2036</SelectItem>
+                                      <SelectItem value="2037">2037</SelectItem>
+                                      <SelectItem value="2038">2038</SelectItem>
+                                      <SelectItem value="2039">2039</SelectItem>
+                                      <SelectItem value="2040">2040</SelectItem>
+                                      <SelectItem value="2041">2041</SelectItem>
+                                      <SelectItem value="2042">2042</SelectItem>
+                                      <SelectItem value="2043">2043</SelectItem>
+                                      <SelectItem value="2044">2044</SelectItem>
+                                      <SelectItem value="2045">2045</SelectItem>
+                                      <SelectItem value="2046">2046</SelectItem>
+                                    </ScrollArea>
                                   </SelectContent>
                                 </Select>
                               </FormControl>
@@ -706,13 +728,13 @@ export default function EventForm(props: props) {
           <Separator />
 
           <div>
-            <div className="grid grid-cols-8 gap-4">
+            <div className="md:grid flex flex-col grid-cols-8 gap-4">
               <FormField
                 //@ts-ignore
                 name="imgs"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="space-y-4 col-span-6">
+                  <FormItem className="space-y-4 lg:col-span-6 sm:col-span-5">
                     <FormLabel>EVENT IMAGES</FormLabel>
                     <FormControl>
                       <Upload
@@ -729,7 +751,6 @@ export default function EventForm(props: props) {
                             (base64Array: any) => {
                               field.onChange(base64Array);
                               form.setValue("images", base64Array);
-                              setImages((prev) => prev.concat(base64Array));
                             }
                           );
                         }}
@@ -746,8 +767,8 @@ export default function EventForm(props: props) {
                 name="coverImage"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem className="space-y-4 col-span-2">
-                    <FormLabel>COVER IMAGE</FormLabel>
+                  <FormItem className="space-y-4 lg:col-span-2 sm:col-span-3">
+                    <FormLabel>EVENT COVER IMAGE</FormLabel>
                     <FormControl>
                       <Upload
                         className="col-span-1"
@@ -763,7 +784,6 @@ export default function EventForm(props: props) {
                             e.target.files,
                             (base64Array: any) => {
                               field.onChange(base64Array[0]); // Array of base64 encoded files
-                              setImages((prev) => base64Array.concat(prev));
                             }
                           );
                         }}
@@ -776,13 +796,38 @@ export default function EventForm(props: props) {
               />
             </div>
 
-            {!!images.length && (
+            {!!coverImage && (
               <div className="my-6 space-y-6">
                 <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  UPLOADED IMAGES
+                  EVENT COVER IMAGE
                 </span>
                 <div className="max-h-[400px] overflow-auto">
                   <div className="grid grid-cols-4 gap-4 mr-2">
+                    <div className="overflow-hidden rounded-md aspect-video border">
+                      <Image
+                        src={
+                          coverImage.url.startsWith("uploads")
+                            ? `${process.env.NEXT_PUBLIC_UPLOAD_DIRECTORY}/${coverImage.url}`
+                            : coverImage.url
+                        }
+                        alt={"Event Image"}
+                        width={250}
+                        height={330}
+                        className="h-auto w-auto object-cover aspect-video"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!!(images && images.length) && (
+              <div className="my-6 space-y-6">
+                <span className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  EVENT IMAGES
+                </span>
+                <div className="max-h-[400px] overflow-auto">
+                  <div className="md:grid grid-cols-4 flex flex-col gap-4 mr-2">
                     {images.map(
                       (img: { url: string; name: string }, index: number) => (
                         <div
@@ -795,11 +840,10 @@ export default function EventForm(props: props) {
                                 ? `${process.env.NEXT_PUBLIC_UPLOAD_DIRECTORY}/${img.url}`
                                 : img.url
                             }
-                            unoptimized={true}
                             alt={"Event Image"}
                             width={250}
                             height={330}
-                            className="h-auto w-auto object-cover transition-all hover:scale-105 aspect-video"
+                            className="h-auto w-auto object-cover aspect-video"
                           />
                         </div>
                       )

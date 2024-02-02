@@ -1,4 +1,4 @@
-import { coordinator, event, event_coordinator, event_image, event_report } from "@prisma/client";
+import { coordinator, event, event_coordinator, event_cover_image, event_image, event_report } from "@prisma/client";
 import { AxiosResponse } from "axios";
 
 export type APIResponse<T> = {
@@ -19,6 +19,7 @@ export type EventType = event & {
     endTime: string;
     images: event_image[];
     coordinators: event_coordinator[];
+    cover_image: event_cover_image
     report: event_report;
 }
 

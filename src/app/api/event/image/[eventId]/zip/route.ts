@@ -11,6 +11,7 @@ import path from "path";
 // NEXTJS TYPES
 import { NextRequest, NextResponse } from "next/server";
 import { purifyString } from "@/shared/utils/utils";
+import { createImagesZipStream } from "@/shared/utils/name";
 
 
 export async function GET(req: NextRequest, { params: { eventId } }: { params: { eventId: string } }) {
@@ -38,10 +39,6 @@ export async function GET(req: NextRequest, { params: { eventId } }: { params: {
         );
     }
 
-    const zipName = `${purifyString(event.name)}_${dayjs(event.startDate).format('YYYYMMDDTHHmmss')}.zip`;
-    const zipRelativePath = `uploads/images/archives/${zipName}`
-    const outputPath = fs.createWriteStream(path.join(process.cwd(), 'public', zipRelativePath));
-
     const archive = archiver('zip', { zlib: { level: 9 }, });
 
     archive.on('error', (err) => {
@@ -55,7 +52,10 @@ export async function GET(req: NextRequest, { params: { eventId } }: { params: {
         );
     });
 
-    archive.pipe(outputPath);
+
+    const { zipStream, zipRelativePath, zipName } = createImagesZipStream(event);
+
+    archive.pipe(zipStream);
 
     event.images.forEach((image) => {
         archive.append(fs.createReadStream(`public/${image.url}`), { name: image.name });

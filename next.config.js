@@ -8,7 +8,7 @@ const nextConfig = {
         return [
             {
                 source: '/',
-                destination: '/event',
+                destination: '/events/recents',
                 permanent: true,
             },
         ]

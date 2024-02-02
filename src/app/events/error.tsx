@@ -12,7 +12,7 @@ export default function Error({
 }) {
 
     return (
-        <div className="flex flex-col items-center place-content-center text-center w-full bg-white">
+        <div className="flex flex-col items-center place-content-center text-center w-full">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 1024 768"
