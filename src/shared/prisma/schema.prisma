@@ -23,6 +23,7 @@ enum department {
   COMMERCE
   IT
   LAW
+  MANAGEMENT
 }
 
 enum organizer {
@@ -61,7 +62,7 @@ model event {
   coordinators event_coordinator[]
   images       event_image[]
   report       event_report?
-  cover_image  event_cover_image?
+  coverImage   event_cover_image?
 }
 
 model event_coordinator {
@@ -70,8 +71,8 @@ model event_coordinator {
   email          String      @unique
   contNo         String
   department     department?
-  batchStartDate String
-  batchEndDate   String
+  batchStartDate String?
+  batchEndDate   String?
   type           coordinator @default(STUDENT)
   isActive       Boolean     @default(true)
   createdAt      DateTime    @default(now())

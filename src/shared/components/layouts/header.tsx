@@ -148,7 +148,7 @@ const Header = () => {
                     searchTerm
                       ? `/events?name=${searchTerm}`
                       : date?.to && date?.from
-                      ? `/event?to=${date.to.toDateString()}&from=${date.from.toDateString()}`
+                      ? `/events?to=${date.to.toDateString()}&from=${date.from.toDateString()}`
                       : ""
                   }
                 >

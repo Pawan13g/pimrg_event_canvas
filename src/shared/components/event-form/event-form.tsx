@@ -72,7 +72,6 @@ import { convertFilesToBase64Array } from "@/shared/utils/utils";
 import { EventType } from "@/shared/constants/types";
 import { EventFormSchema, EventFormValues } from "./form.schema";
 import { ArrowLeft } from "lucide-react";
-import { revalidatePath, revalidateTag } from "next/cache";
 import { TagRevalidator } from "./cache_revalidator";
 import { event_coordinator } from "@prisma/client";
 import { ScrollArea } from "../ui/scroll-area";
@@ -121,13 +120,13 @@ export default function EventForm(props: props) {
         contNo: c.contNo,
         type: c.type,
         department: c.department ? c.department : undefined,
-        batchStartDate: c.batchStartDate,
-        batchEndDate: c.batchStartDate,
+        batchStartDate: c.batchStartDate ? c.batchStartDate : "",
+        batchEndDate: c.batchStartDate ? c.batchStartDate : "",
       })),
     },
   });
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: "coordinators",
     control: form.control,
   });
@@ -144,15 +143,8 @@ export default function EventForm(props: props) {
   );
 
   useEffect(() => {
-    if (isSuccess) TagRevalidator(), router.push("/events");
+    if (isSuccess) TagRevalidator(), router.push("/events/recents");
   }, [router, isSuccess]);
-
-  useEffect(() => {
-    if (event) {
-      if (event.images.length) form.setValue("images", event.images);
-      if (event.cover_image) form.setValue("coverImage", event.cover_image);
-    }
-  }, [event]);
 
   return (
     <div className="space-y-6 w-full">
@@ -462,6 +454,9 @@ export default function EventForm(props: props) {
                                     <SelectItem value="IT">
                                       IT Department
                                     </SelectItem>
+                                    <SelectItem value="MANAGEMENT">
+                                      MANAGEMENT Department
+                                    </SelectItem>
                                     <SelectItem value="COMMERCE">
                                       Commerce Department
                                     </SelectItem>
@@ -507,8 +502,6 @@ export default function EventForm(props: props) {
                     email: "",
                     contNo: "",
                     type: "STUDENT",
-                    batchStartDate: "2021",
-                    batchEndDate: "2023",
                   })
                 }
               >
@@ -813,7 +806,7 @@ export default function EventForm(props: props) {
                         alt={"Event Image"}
                         width={250}
                         height={330}
-                        className="h-auto w-auto object-cover aspect-video"
+                        className="h-auto w-full object-cover aspect-video"
                       />
                     </div>
                   </div>
@@ -843,7 +836,7 @@ export default function EventForm(props: props) {
                             alt={"Event Image"}
                             width={250}
                             height={330}
-                            className="h-auto w-auto object-cover aspect-video"
+                            className="h-auto w-full object-cover aspect-video"
                           />
                         </div>
                       )

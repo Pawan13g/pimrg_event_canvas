@@ -12,7 +12,6 @@ import { Badge } from "@/shared/components/ui/badge";
 import { getAllEvents } from "./actions";
 
 // TYPES
-import { event } from "@prisma/client";
 import Empty from "@/shared/components/ui/empty";
 
 type Props = {
@@ -31,7 +30,7 @@ const Events = async ({ searchParams }: Props) => {
         <div className="space-y-3">
           <div className="overflow-hidden rounded-md border">
             <Image
-              src={`${process.env.NEXT_PUBLIC_UPLOAD_DIRECTORY}/${event.cover_image?.url}`}
+              src={`${process.env.NEXT_PUBLIC_UPLOAD_DIRECTORY}/${event.coverImage?.url}`}
               alt={"Event Image"}
               width={250}
               height={330}

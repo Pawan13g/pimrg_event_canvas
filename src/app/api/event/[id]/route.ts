@@ -17,7 +17,7 @@ export async function GET(req: Request, { params: { id } }: { params: { id: numb
         return NextResponse.json({ error: true, success: false, msg: "unsufficient parimeters", data: null }, { status: 400 });
 
     try {
-        const data = await prisma.event.findUnique({ where: { id: Number(id) }, include: { coordinators: true, images: true, report: true }, });
+        const data = await prisma.event.findUnique({ where: { id: Number(id) }, include: { coordinators: true, images: true, report: true, coverImage: true }, });
         if (!data) return NextResponse.json({ error: false, success: true, msg: "event not found", data }, { status: 404 });
         return NextResponse.json({ error: false, success: true, msg: "success", data }, { status: 200 });
 
@@ -41,7 +41,7 @@ export async function DELETE(req: Request, { params: { id } }: { params: { id: n
     }
 }
 
-export async function PUT(req: Request, { params: { id } }: { params: { id: number } }) {
+export async function PUT(req: Request, { params: { id } }: { params: { id: string } }) {
 
     try {
         const { name, organizer, description, startDate, endDate, startTime, endTime, coordinators, images, report, coverImage }: PUT = await req.json();
@@ -67,7 +67,7 @@ export async function PUT(req: Request, { params: { id } }: { params: { id: numb
             if (isExist) await prisma.event_coordinator.update({ where: { id: isExist.id }, data: { name, email, contNo, department, type, eventId: data.id } });
 
             // if not exist, crate new one
-            else await prisma.event_coordinator.create({ data: { name, email, contNo, department, batchStartDate, batchEndDate, type, eventId: id } });
+            else await prisma.event_coordinator.create({ data: { name, email, contNo, department, batchStartDate, batchEndDate, type, eventId: parseInt(id) } });
         });
 
         // add new images if added
@@ -76,7 +76,7 @@ export async function PUT(req: Request, { params: { id } }: { params: { id: numb
             const imageRelativePath = `uploads/images/${name}`
             const imageOutputPath = path.join(process.cwd(), 'public', imageRelativePath);
             fs.writeFileSync(imageOutputPath, imageBuffer);
-            await prisma.event_image.create({ data: { name: name, url: imageRelativePath, eventId: id } });
+            await prisma.event_image.create({ data: { name: name, url: imageRelativePath, eventId: parseInt(id) } });
         })
 
         // update cover image if exits
@@ -85,7 +85,7 @@ export async function PUT(req: Request, { params: { id } }: { params: { id: numb
             const coverImageRelativePath = `uploads/images/${coverImage.name}`
             const coverImageOutputPath = path.join(process.cwd(), 'public', coverImageRelativePath);
             fs.writeFileSync(coverImageOutputPath, coverImageBuffer);
-            await prisma.event_cover_image.create({ data: { name: coverImage.name, url: coverImageRelativePath, eventId: id } });
+            await prisma.event_cover_image.update({ where: { eventId: parseInt(id) }, data: { url: coverImageRelativePath } });
         }
 
         // add new report if exits
@@ -94,7 +94,7 @@ export async function PUT(req: Request, { params: { id } }: { params: { id: numb
             const reportRelativePath = `uploads/reports/${report.name}`
             const reportOutputPath = path.join(process.cwd(), 'public', reportRelativePath);
             fs.writeFileSync(reportOutputPath, reportBuffer);
-            await prisma.event_report.create({ data: { name: name, url: reportRelativePath, eventId: data.id } });
+            await prisma.event_report.update({ where: { eventId: parseInt(id) }, data: { url: reportRelativePath } });
         }
 
         return NextResponse.json({ error: false, success: true, msg: "event updated", data }, { status: 200 });

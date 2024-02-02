@@ -113,7 +113,7 @@ const Login = () => {
     <>
       <div className="container relative flex flex-col h-screen items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
         <Link
-          href="/event"
+          href="/events"
           className={cn(
             buttonVariants({ variant: "ghost", size: "icon" }),
             "absolute right-4 top-4 md:right-8 md:top-8"

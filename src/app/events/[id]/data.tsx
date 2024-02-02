@@ -58,7 +58,9 @@ const EventDisplay = async ({ id }: { id: string }) => {
           </Link>
           <h3 className="text-lg font-medium flex gap-2 items-center">
             {event?.name}
-            <BiEditAlt className="hover:scale-125 transition-all hover:text-purple-500" />
+            <Link href={`${id}/edit`}>
+              <BiEditAlt className="hover:scale-125 transition-all hover:text-purple-500" />
+            </Link>
           </h3>
         </div>
         <p className="text-sm ml-7 text-muted-foreground">

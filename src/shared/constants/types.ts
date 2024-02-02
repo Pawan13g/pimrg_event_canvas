@@ -19,7 +19,7 @@ export type EventType = event & {
     endTime: string;
     images: event_image[];
     coordinators: event_coordinator[];
-    cover_image: event_cover_image
+    coverImage: event_cover_image
     report: event_report;
 }
 

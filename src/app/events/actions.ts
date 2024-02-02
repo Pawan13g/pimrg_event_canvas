@@ -17,7 +17,7 @@ export const getAllEvents = async (searchParams: {
         if (name) {
             const data = await prisma.event.findMany({
                 where: { isActive: true, name: { contains: name } },
-                include: { cover_image: true }
+                include: { coverImage: true }
             });
 
             return {
@@ -44,7 +44,7 @@ export const getAllEvents = async (searchParams: {
                     startDate: { gte: new Date(from) },
                     endDate: { lte: new Date(to) },
                 },
-                include: { cover_image: true }
+                include: { coverImage: true }
             });
 
             return {
@@ -58,7 +58,7 @@ export const getAllEvents = async (searchParams: {
         } else {
             const data = await prisma.event.findMany({
                 where: { isActive: true },
-                include: { cover_image: true }
+                include: { coverImage: true }
             });
 
             return {
@@ -84,7 +84,7 @@ export const getRecentEvents = async () => {
     sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
 
     try {
-        const data = await prisma.event.findMany({ where: { isActive: true }, include: { cover_image: true } });
+        const data = await prisma.event.findMany({ where: { isActive: true }, include: { coverImage: true } });
         return {
             error: false,
             msg: data.length
@@ -106,7 +106,7 @@ export const getOneEvent = async (id: string) => {
     if (!id) return { error: true, msg: "Unsufficient parimeters", data: null }
 
     try {
-        const data = await prisma.event.findUnique({ where: { id: parseInt(id) }, include: { coordinators: true, images: true, report: true, cover_image: true }, });
+        const data = await prisma.event.findUnique({ where: { id: parseInt(id) }, include: { coordinators: true, images: true, report: true, coverImage: true }, });
 
         if (!data) return { error: true, msg: `No event found for id: ${id}`, data: null }
 
